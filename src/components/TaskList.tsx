@@ -16,14 +16,31 @@ export function TaskList() {
 
   function handleCreateNewTask() {
     // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+    if (!newTaskTitle)//Bloqueia a inserção de informação vazia.
+      return;
+
+    const newTask = {
+      id: Math.random(),
+      title: newTaskTitle,
+      isComplete: false
+    }
+    setTasks(oldState => [...oldState, newTask]); //"guarda" os dados
+    setNewTaskTitle('');  //Limpa o campo após o usuário digitar 
   }
 
   function handleToggleTaskCompletion(id: number) {
     // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    const newTasks = tasks.map(task => task.id === id ? { //tratamento para o mapeamentoo da interface Task
+      ...task,
+      isComplete: !task.isComplete
+    } : task);
+    setTasks(newTasks)
   }
 
   function handleRemoveTask(id: number) {
     // Remova uma task da listagem pelo ID
+    const filteredTasks = tasks.filter(task => task.id !== id); //tratamento de remoção
+    setTasks(filteredTasks);//deletando com  a const
   }
 
   return (
@@ -32,25 +49,25 @@ export function TaskList() {
         <h2>Minhas tasks</h2>
 
         <div className="input-group">
-          <input 
-            type="text" 
-            placeholder="Adicionar novo todo" 
-            onChange={(e) => setNewTaskTitle(e.target.value)}
-            value={newTaskTitle}
+          <input
+            type="text"
+            placeholder="Adicionar novo todo"
+            onChange={(e) => setNewTaskTitle(e.target.value)} //libera a escrita na field
+            value={newTaskTitle} //aceita disponibilidades de comportamentos para o campo
           />
           <button type="submit" data-testid="add-task-button" onClick={handleCreateNewTask}>
-            <FiCheckSquare size={16} color="#fff"/>
+            <FiCheckSquare size={16} color="#fff" />
           </button>
         </div>
       </header>
 
       <main>
         <ul>
-          {tasks.map(task => (
+          {tasks.map(task => ( //mapeamento da interface Task para componentização 
             <li key={task.id}>
               <div className={task.isComplete ? 'completed' : ''} data-testid="task" >
                 <label className="checkbox-container">
-                  <input 
+                  <input
                     type="checkbox"
                     readOnly
                     checked={task.isComplete}
@@ -62,11 +79,11 @@ export function TaskList() {
               </div>
 
               <button type="button" data-testid="remove-task-button" onClick={() => handleRemoveTask(task.id)}>
-                <FiTrash size={16}/>
+                <FiTrash size={16} />
               </button>
             </li>
           ))}
-          
+
         </ul>
       </main>
     </section>
